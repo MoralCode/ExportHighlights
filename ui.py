@@ -1,28 +1,27 @@
 import flet as ft
 
 def main(page: ft.Page):
-    page.title = "Flet counter example"
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    def on_file_picker_result(e: ft.FilePickerResultEvent):
+        if e.files:
+            selected_file_label.value = f"Selected File: {e.files[0].name}"
+        else:
+            selected_file_label.value = "No file selected."
+        selected_file_label.update()
 
-    txt_number = ft.TextField(value="0", text_align=ft.TextAlign.RIGHT, width=100)
+    # Create file picker instance
+    file_picker = ft.FilePicker(on_result=on_file_picker_result)
 
-    def minus_click(e):
-        txt_number.value = str(int(txt_number.value) - 1)
-        page.update()
+    # Create a label to display the selected file
+    selected_file_label = ft.Text("No file selected.")
 
-    def plus_click(e):
-        txt_number.value = str(int(txt_number.value) + 1)
-        page.update()
+    # Create a button to open the file picker dialog
+    file_button = ft.ElevatedButton(text="Choose File", on_click=lambda _: file_picker.pick_files())
 
-    page.add(
-        ft.Row(
-            [
-                ft.IconButton(ft.icons.REMOVE, on_click=minus_click),
-                txt_number,
-                ft.IconButton(ft.icons.ADD, on_click=plus_click),
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        )
-    )
+    # Add the file picker to the page
+    page.overlay.append(file_picker)
 
-ft.app(main)
+    # Add the button and label to the layout
+    page.add(selected_file_label, file_button)
+
+# Run the app
+ft.app(target=main)
