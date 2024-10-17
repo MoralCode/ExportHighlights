@@ -38,7 +38,13 @@ def main(page: ft.Page):
     file_button = ft.ElevatedButton(text="Choose PDF File", on_click=lambda _: file_picker.pick_files(allowed_extensions=["pdf"]))
 
     # Text area to display extracted highlights
-    highlight_text = ft.Text("")
+    highlight_text = ft.TextField(
+        label="Extracted Highlights:",
+        multiline=True,
+        min_lines=1,
+        max_lines=100,
+        border=ft.InputBorder.NONE,
+    )
 
     # Add the file picker to the page
     page.overlay.append(file_picker)
@@ -47,7 +53,6 @@ def main(page: ft.Page):
     page.add(
         selected_file_label,
         file_button,
-        ft.Text("Extracted Highlights:"),
         highlight_text
     )
 
