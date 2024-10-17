@@ -2,6 +2,7 @@ import flet as ft
 import os
 from pathlib import Path
 from main import extract_highlighted_text, PdfAnnotationType
+from helpers import split_dict_list
 
 def combine_highlight_pair(highlight_a, highlight_b, tolerance=10):
     """ attempt to combine a pair  of highlights based on certain 
@@ -22,6 +23,27 @@ def combine_highlight_pair(highlight_a, highlight_b, tolerance=10):
         return [[ highlight_a, highlight_b ]]
     
     return [ highlight_a, highlight_b ]
+def combine_highlights(highlights, tolerance=10):
+    """ evaluate every pair of highlights and create a final combined list of them
+    """
+    highlights = list(highlights)
+
+    sortkey = lambda f: f["location"]["top"] + (f["location"]["left"] / 10)
+
+    combined_highlights = []
+
+
+    by_page = split_dict_list(highlights, lambda x: x["page_number"], sortkey)
+
+    for page_sublist in by_page:
+
+        by_start_line = split_dict_list(page_sublist, lambda f: f["location"]["top"], sortkey)
+
+        combined_highlights.append(by_start_line)
+    
+    return combined_highlights
+    
+
 def main(page: ft.Page):
     def on_file_picker_result(e: ft.FilePickerResultEvent):
         if e.files:
@@ -45,6 +67,7 @@ def main(page: ft.Page):
                 # Process the selected PDF and extract highlights
                 highlights = extract_highlighted_text(filepath, type_filter=PdfAnnotationType.Highlight)
 
+                highlights = combine_highlights(highlights)
                 highlights = map(lambda x: x['selected_text'], highlights)
                 
                 # Display extracted highlights in the UI
