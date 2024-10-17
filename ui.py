@@ -45,7 +45,7 @@ def main(page: ft.Page):
     selected_file_label = ft.Text("No file selected.")
 
     # Create a button to open the file picker dialog
-    file_button = ft.ElevatedButton(text="Choose PDF File", on_click=lambda _: file_picker.pick_files(allowed_extensions=["pdf"]))
+    file_button = ft.ElevatedButton(text="Choose PDF File", on_click=lambda _: file_picker.pick_files(allowed_extensions=["pdf"], allow_multiple=True))
 
 
     highlightFilesList = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
