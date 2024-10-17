@@ -1,7 +1,22 @@
 import fitz  # PyMuPDF
 import argparse
 from pathlib import Path
-def extract_highlighted_text(pdf_file):
+from enum import Enum
+
+class PdfAnnotationType(Enum):
+    Text = 0
+    FreeText = 2
+    Highlight = 8
+    Underline = 9
+    Squiggly = 10
+    StrikeOut = 11
+    Redact = 12
+    Stamp = 13
+    Caret = 14
+    Popup = 16
+
+
+def extract_highlighted_text(pdf_file, type_filter:PdfAnnotationType=None):
     # Open the PDF
     doc = fitz.open(pdf_file)
 
@@ -22,6 +37,9 @@ def extract_highlighted_text(pdf_file):
             # https://github.com/pymupdf/PyMuPDF/discussions/1573
             annotation['selected_text'] = page.get_textbox(annot.rect)
             annotation['additional_text'] = annot.get_text()
+
+            if type_filter is not None and annot.type[0]!= type_filter.value:
+                continue
 
             annotations.append(annotation)
 
