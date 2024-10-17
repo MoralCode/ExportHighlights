@@ -1,18 +1,25 @@
 import flet as ft
 import os
+from pathlib import Path
 from main import extract_highlighted_text
 
 def main(page: ft.Page):
     def on_file_picker_result(e: ft.FilePickerResultEvent):
         if e.files:
-            selected_file = e.files[0].path
-            selected_file_label.value = f"Selected File: {os.path.basename(selected_file)}"
-            
-            # Process the selected PDF and extract highlights
-            highlights = extract_highlighted_text(selected_file)
 
-            # Display extracted highlights in the UI
-            highlight_text.value = "\n".join(highlights)
+            for f in e.files:
+                filepath = Path(f.path)
+                if len(e.files) > 1:
+                    selected_file_label.value = f"Selected Multiple Files: {filepath.basename()}"
+
+                else:
+                    selected_file_label.value = f"Selected File: {os.path.basename(filepath)}"
+            
+                # Process the selected PDF and extract highlights
+                highlights = extract_highlighted_text(filepath)
+                
+                # Display extracted highlights in the UI
+                highlight_text.value = "\n".join(highlights)
         else:
             selected_file_label.value = "No file selected."
             highlight_text.value = ""
