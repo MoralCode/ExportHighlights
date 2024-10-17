@@ -32,6 +32,8 @@ def extract_highlighted_text(pdf_file, type_filter:PdfAnnotationType=None):
 
     annotations = []
 
+    order = 0
+
     for page in doc:
         for annot in page.annots():
 
@@ -42,13 +44,15 @@ def extract_highlighted_text(pdf_file, type_filter:PdfAnnotationType=None):
                 "name": annot.type[1],
                 "code": annot.type[0]
             }
+            annotation['order'] = order
             annotation['page_number'] = page.number
             annotation['color'] = annot.colors
             annotation['location'] = rect_to_ltrb(annot.rect)  # in page coordinates (x0, y0, x1, y1)
             # https://github.com/pymupdf/PyMuPDF/discussions/1573
             annotation['selected_text'] = page.get_textbox(annot.rect)
             annotation['additional_text'] = annot.get_text()
-
+            
+            order += 1  # annotations are ordered by their appearance order in the PDF file
             if type_filter is not None and annot.type[0]!= type_filter.value:
                 continue
 
