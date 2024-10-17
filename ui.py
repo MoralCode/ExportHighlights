@@ -6,14 +6,14 @@ from main import extract_highlighted_text
 def main(page: ft.Page):
     def on_file_picker_result(e: ft.FilePickerResultEvent):
         if e.files:
+            if len(e.files) > 1:
+                selected_file_label.value = f"Selected {len(e.files)} Files:"
+            else:
+                selected_file_label.value = f"Selected File:  {e.files[0].path}"
 
             for f in e.files:
                 filepath = Path(f.path)
-                if len(e.files) > 1:
-                    selected_file_label.value = f"Selected Multiple Files: {filepath.basename()}"
 
-                else:
-                    selected_file_label.value = f"Selected File: {os.path.basename(filepath)}"
             
                 # Process the selected PDF and extract highlights
                 highlights = extract_highlighted_text(filepath)
