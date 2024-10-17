@@ -4,26 +4,25 @@ from pathlib import Path
 from main import extract_highlighted_text, PdfAnnotationType
 from helpers import split_dict_list
 
-def combine_highlight_pair(highlight_a, highlight_b, tolerance=10):
-    """ attempt to combine a pair  of highlights based on certain 
-    criteria (e.g. keeping highlights on the same line if they started there)
-
-    Arguments:
-    highlights -- list of dictionaries representing highlights to combine
-    tolerance -- tolerance distance for considering two values "the same"
-
-    Returns:
-        A list of two highlights if they could not be combined
-        A list of a list of highlights if they could be combined
+def merge_highlights(highlights, micro_combine=" ", macro_combine="\n\n" ):
+    """ merge a grouped set of highlights into a list of strings of their contents
     """
 
+    #check if all items in highlights are dictionaries and if so combine them.
 
-    # detect if the highlights both start on the same line (y coordinate)
-    if highlight_a.location.top - highlight_b.location.top < tolerance:
-        return [[ highlight_a, highlight_b ]]
-    
-    return [ highlight_a, highlight_b ]
-def combine_highlights(highlights, tolerance=10):
+    # base case: all are highlights
+    if all(isinstance(highlight, dict) for highlight in highlights):
+        return micro_combine.join([x["selected_text"] for x in highlights])
+
+    # base case: all are strings (already merged)
+    if all(isinstance(highlight, str) for highlight in highlights):
+        return macro_combine.join(highlights)
+
+    # recursive case: mix of types (highlight, string, list)
+    return macro_combine.join([merge_highlights(h, micro_combine, macro_combine) for h in highlights])
+
+
+def group_highlights(highlights, tolerance=10):
     """ evaluate every pair of highlights and create a final combined list of them
     """
     highlights = list(highlights)
@@ -67,11 +66,11 @@ def main(page: ft.Page):
                 # Process the selected PDF and extract highlights
                 highlights = extract_highlighted_text(filepath, type_filter=PdfAnnotationType.Highlight)
 
-                highlights = combine_highlights(highlights)
-                highlights = map(lambda x: x['selected_text'], highlights)
+                highlights = group_highlights(highlights)
+                merged = merge_highlights(highlights)
                 
                 # Display extracted highlights in the UI
-                highlight_text.value = "\n\n".join(highlights)
+                highlight_text.value = merged
                 highlightFilesList.controls.append(highlight_text)
 
         else:
