@@ -42,6 +42,7 @@ def extract_highlighted_text(pdf_file, type_filter:PdfAnnotationType=None):
                 "name": annot.type[1],
                 "code": annot.type[0]
             }
+            annotation['page_number'] = page.number
             annotation['color'] = annot.colors
             annotation['location'] = rect_to_ltrb(annot.rect)  # in page coordinates (x0, y0, x1, y1)
             # https://github.com/pymupdf/PyMuPDF/discussions/1573
