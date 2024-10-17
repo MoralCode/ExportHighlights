@@ -17,21 +17,22 @@ def extract_highlighted_text(pdf_file):
 
     return highlights
 
-
-parser = argparse.ArgumentParser(description="Parse Highlighted sections from Okular highlighted PDF files")
-parser.add_argument("pdf_file", help="Path to the Okular highlighted PDF file")
-args = parser.parse_args()
-
-
-pdfPath = Path(args.pdf_file)
-
-if not pdfPath.exists():
-    print(f"Error: {pdfPath} does not exist.")
-    exit(1)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Parse Highlighted sections from Okular highlighted PDF files")
+    parser.add_argument("pdf_file", help="Path to the Okular highlighted PDF file")
+    args = parser.parse_args()
 
 
-# Example usage
-highlights = extract_highlighted_text(str(pdfPath))
+    pdfPath = Path(args.pdf_file)
 
-for idx, highlight in enumerate(highlights):
-    print(f"Highlight {idx + 1}: {highlight}")
+    if not pdfPath.exists():
+        print(f"Error: {pdfPath} does not exist.")
+        exit(1)
+
+
+    # Example usage
+    highlights = extract_highlighted_text(str(pdfPath))
+
+    print(len(highlights))
+    for idx, highlight in enumerate(highlights):
+        print(f"Highlight {idx + 1}: {highlight}")
