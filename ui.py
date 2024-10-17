@@ -1,7 +1,7 @@
 import flet as ft
 import os
 from pathlib import Path
-from main import extract_highlighted_text
+from main import extract_highlighted_text, PdfAnnotationType
 
 def main(page: ft.Page):
     def on_file_picker_result(e: ft.FilePickerResultEvent):
@@ -24,7 +24,9 @@ def main(page: ft.Page):
                 )
             
                 # Process the selected PDF and extract highlights
-                highlights = extract_highlighted_text(filepath)
+                highlights = extract_highlighted_text(filepath, type_filter=PdfAnnotationType.Highlight)
+
+                highlights = map(lambda x: x['selected_text'], highlights)
                 
                 # Display extracted highlights in the UI
                 highlight_text.value = "\n\n".join(highlights)
