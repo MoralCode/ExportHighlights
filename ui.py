@@ -14,19 +14,29 @@ def main(page: ft.Page):
             for f in e.files:
                 filepath = Path(f.path)
 
+                # Text area to display extracted highlights
+                highlight_text = ft.TextField(
+                    label=f"Extracted Highlights from {filepath.name}:",
+                    multiline=True,
+                    min_lines=1,
+                    max_lines=100,
+                    border=ft.InputBorder.NONE,
+                )
             
                 # Process the selected PDF and extract highlights
                 highlights = extract_highlighted_text(filepath)
                 
                 # Display extracted highlights in the UI
-                highlight_text.value = "\n".join(highlights)
+                highlight_text.value = "\n\n".join(highlights)
+                highlightFilesList.controls.append(highlight_text)
+
         else:
             selected_file_label.value = "No file selected."
-            highlight_text.value = ""
+            
 
         # Update UI elements
         selected_file_label.update()
-        highlight_text.update()
+        highlightFilesList.update()
 
     # Create file picker instance
     file_picker = ft.FilePicker(on_result=on_file_picker_result)
@@ -37,14 +47,8 @@ def main(page: ft.Page):
     # Create a button to open the file picker dialog
     file_button = ft.ElevatedButton(text="Choose PDF File", on_click=lambda _: file_picker.pick_files(allowed_extensions=["pdf"]))
 
-    # Text area to display extracted highlights
-    highlight_text = ft.TextField(
-        label="Extracted Highlights:",
-        multiline=True,
-        min_lines=1,
-        max_lines=100,
-        border=ft.InputBorder.NONE,
-    )
+
+    highlightFilesList = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
 
     # Add the file picker to the page
     page.overlay.append(file_picker)
@@ -53,7 +57,7 @@ def main(page: ft.Page):
     page.add(
         selected_file_label,
         file_button,
-        highlight_text
+        highlightFilesList
     )
 
 # Run the app
