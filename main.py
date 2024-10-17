@@ -31,7 +31,7 @@ args = parser.parse_args()
 pdfPath = Path(args.pdf_file)
 
 if not pdfPath.exists():
-	print(f"Error: {pdfPath} does not exist.")
+    print(f"Error: {pdfPath} does not exist.")
     exit(1)
 
 
