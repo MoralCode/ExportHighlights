@@ -3,6 +3,25 @@ import os
 from pathlib import Path
 from main import extract_highlighted_text, PdfAnnotationType
 
+def combine_highlight_pair(highlight_a, highlight_b, tolerance=10):
+    """ attempt to combine a pair  of highlights based on certain 
+    criteria (e.g. keeping highlights on the same line if they started there)
+
+    Arguments:
+    highlights -- list of dictionaries representing highlights to combine
+    tolerance -- tolerance distance for considering two values "the same"
+
+    Returns:
+        A list of two highlights if they could not be combined
+        A list of a list of highlights if they could be combined
+    """
+
+
+    # detect if the highlights both start on the same line (y coordinate)
+    if highlight_a.location.top - highlight_b.location.top < tolerance:
+        return [[ highlight_a, highlight_b ]]
+    
+    return [ highlight_a, highlight_b ]
 def main(page: ft.Page):
     def on_file_picker_result(e: ft.FilePickerResultEvent):
         if e.files:
