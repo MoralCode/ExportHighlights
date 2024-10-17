@@ -16,6 +16,16 @@ class PdfAnnotationType(Enum):
     Popup = 16
 
 
+def rect_to_ltrb(rect, as_dict=True):
+    # Rect.x0 - left corners’ x coordinate
+    # Rect.x1 - right corners’ x -coordinate
+    # Rect.y0 - top corners’ y coordinate
+    # Rect.y1 - bottom corners’ y coordinate
+    if as_dict:
+        return {"left": rect.x0, "top": rect.y0, "right": rect.x1, "bottom": rect.y1}
+    else:  # return as a tuple of (left, top, right, bottom) coordinates
+        return (rect.x0, rect.y0, rect.x1, rect.y1)
+
 def extract_highlighted_text(pdf_file, type_filter:PdfAnnotationType=None):
     # Open the PDF
     doc = fitz.open(pdf_file)
@@ -33,7 +43,7 @@ def extract_highlighted_text(pdf_file, type_filter:PdfAnnotationType=None):
                 "code": annot.type[0]
             }
             annotation['color'] = annot.colors
-            annotation['location'] = annot.rect  # in page coordinates (x0, y0, x1, y1)
+            annotation['location'] = rect_to_ltrb(annot.rect)  # in page coordinates (x0, y0, x1, y1)
             # https://github.com/pymupdf/PyMuPDF/discussions/1573
             annotation['selected_text'] = page.get_textbox(annot.rect)
             annotation['additional_text'] = annot.get_text()
